@@ -55,6 +55,17 @@ public class LaptopsGui extends BorderPane {
         ObservableList<Laptop> laptopList = FXCollections.observableArrayList(laptops);
         listView.setItems(laptopList);
         listView.getSelectionModel().select(0);
+        listView.setCellFactory(param -> new ListCell<Laptop>() {
+            @Override
+            protected void updateItem(Laptop laptop, boolean empty) {
+                super.updateItem(laptop, empty);
+                if (laptop!= null) {
+                    setText(laptop.getDisplayName());
+                } else {
+                    setText(null);
+                }
+            }
+        });
 
         Label laptopInfoTitle = new Label("Laptop Information");
         laptopInfoTitle.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -65,27 +76,33 @@ public class LaptopsGui extends BorderPane {
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
                         laptopInfoVBox.getChildren().clear();
-                        Label laptopInfo = new Label(newValue.toString());
+                        Label laptopInfo = new Label(" Display Name: " + newValue.getDisplayName() + "Release Date: " + newValue.getReleaseDate() + "CPU: " + newValue.getCpu() + " RAM: " + newValue.getRam());
+                        Label laptopInfo2 = new Label(" SSD: " + newValue.getSsd());
                         Separator hr = new Separator();
                         Label laptopReviewTitle = new Label("Review");
                         laptopReviewTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-                        laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, hr, laptopReviewTitle);
+                        laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, laptopInfo2, hr, laptopReviewTitle);
                         for (Review review : newValue.getReviews()) {
-                            Label laptopReview = new Label(review.toString());
-                            laptopInfoVBox.getChildren().add(laptopReview);
+                            Label laptopUserReview = new Label("User: " + review.getUserName());
+                            Label laptopCommentReview = new Label("Comment: " + review.getComment());
+                            Label line = new Label("\n");
+                            laptopInfoVBox.getChildren().addAll(laptopUserReview, laptopCommentReview, line);
                         }
                     }
                 });
                 Laptop selectedLaptop = listView.getSelectionModel().getSelectedItem();
                 if(selectedLaptop != null) {
-                    Label laptopInfo = new Label(selectedLaptop.toString());
+                    Label laptopInfo = new Label(" Display Name: " + selectedLaptop.getDisplayName() + " Release Date: " + selectedLaptop.getReleaseDate() + " CPU: " + selectedLaptop.getCpu() + " RAM: " + selectedLaptop.getRam());
+                    Label laptopInfo2 = new Label(" SSD: " + selectedLaptop.getSsd());
                     Separator hr = new Separator();
-                    Label laptopReviewTitle = new Label("Review");
+                    Label laptopReviewTitle = new Label("Reviews:");
                     laptopReviewTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-                    laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, hr, laptopReviewTitle);
+                    laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, laptopInfo2, hr, laptopReviewTitle);
                     for(Review review : selectedLaptop.getReviews()){
-                        Label laptopReview = new Label(review.toString());
-                        laptopInfoVBox.getChildren().add(laptopReview);
+                        Label laptopUserReview = new Label("User: " + review.getUserName());
+                        Label laptopCommentReview = new Label("Comment: " + review.getComment());
+                        Label line = new Label("\n");
+                        laptopInfoVBox.getChildren().addAll(laptopUserReview, laptopCommentReview, line);
                 }
             }
         }
