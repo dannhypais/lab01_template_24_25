@@ -2,7 +2,10 @@ package pt.pa.gui;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import pt.pa.model.Laptop;
+import pt.pa.model.Review;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,8 +49,46 @@ public class LaptopsGui extends BorderPane {
 
     public void initializeComponents() throws FileNotFoundException {
      //TODO
+        ImageView imageView = loadThumbnailImage();
 
-    }
+        ListView<Laptop> listView = new ListView<Laptop>();
+        ObservableList<Laptop> laptopList = FXCollections.observableArrayList(laptops);
+        listView.setItems(laptopList);
+        listView.getSelectionModel().select(0);
+
+        Label laptopInfoTitle = new Label("Laptop Information");
+        laptopInfoTitle.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        VBox laptopInfoVBox = new VBox();
+        setTop(imageView);
+        setLeft(listView);
+        setCenter(laptopInfoVBox);
+        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        laptopInfoVBox.getChildren().clear();
+                        Label laptopInfo = new Label(newValue.toString());
+                        Separator hr = new Separator();
+                        Label laptopReviewTitle = new Label("Review");
+                        laptopReviewTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                        laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, hr, laptopReviewTitle);
+                        for (Review review : newValue.getReviews()) {
+                            Label laptopReview = new Label(review.toString());
+                            laptopInfoVBox.getChildren().add(laptopReview);
+                        }
+                    }
+                });
+                Laptop selectedLaptop = listView.getSelectionModel().getSelectedItem();
+                if(selectedLaptop != null) {
+                    Label laptopInfo = new Label(selectedLaptop.toString());
+                    Separator hr = new Separator();
+                    Label laptopReviewTitle = new Label("Review");
+                    laptopReviewTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+                    laptopInfoVBox.getChildren().addAll(laptopInfoTitle, laptopInfo, hr, laptopReviewTitle);
+                    for(Review review : selectedLaptop.getReviews()){
+                        Label laptopReview = new Label(review.toString());
+                        laptopInfoVBox.getChildren().add(laptopReview);
+                }
+            }
+        }
 
     /**
      * Load the data  contain on json file specified on DATA_PATH.
